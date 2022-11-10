@@ -31,19 +31,23 @@ translation = translator.translate("This is a pen.")
 #     return response
 
 
+def getWord():
+ with open('word.txt') as file:
+    f = file.read()
+    words = list(map(str, f.split()))
+    en = random.choice(words)
+    return en
+
 def getQuestion():
-    with open('word.txt') as file:
-        f = file.read()
-        words = list(map(str, f.split()))
-        en = random.choice(words)
-        translator= Translator(to_lang="id")
-        id = translator.translate(en)
-        result = KBBI(id)
-        return {
-            'en' : en,
-            'id' : id,
-            'kbbi' : result.__str__(),
-        }
+    en = getWord()
+    translator= Translator(to_lang="id")
+    id = translator.translate(en)
+    result = KBBI(id)
+    return {
+        'en' : en,
+        'id' : id,
+        'kbbi' : result.__str__(),
+    }
 
 @app.route('/learn')
 def learn():
@@ -51,6 +55,13 @@ def learn():
     for num in range(0,5):
         list_question.append(getQuestion())
     return jsonify(list_question)
+
+@app.route('/list-random-word=<nnn>')
+def listRandomWord(nnn):
+    list = []
+    for num in range(0, int(nnn)):
+        list.append(getWord())
+    return jsonify(list)
 
 
 
